@@ -1,27 +1,27 @@
 from classes import AddressBook, Record, Birthday, Phone, Name, Field
 
-def input_erorr(func):
+def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except ValueError:
             return "Give me name and phone please."
         except KeyError as e:
-            return f"key {e} not found, try again"
+            return f"Key {e} not found, try again."
         except IndexError:
-            return "Index not found, write again"
-    return inner 
+            return "Index not found, write again."
+    return inner
 
-@input_erorr
+@input_error
 def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
-    return cmd, *args
+    return cmd, args  
 
-@input_erorr
+@input_error
 def add_contact(args, book: AddressBook):
     name, phone = args
-    record = book.get(name)
+    record = book.find(name)
 
     if record is None:
         record = Record(name)
@@ -33,65 +33,67 @@ def add_contact(args, book: AddressBook):
     record.add_phone(phone)
     return message
 
-@input_erorr
+@input_error
 def change_contact(args, book: AddressBook):
     name, old_phone, new_phone = args
-    record = book.get(name)
- 
+    record = book.find(name)
+
     if record:
         record.edit_phone(old_phone, new_phone)
         return f"Contact {name} updated."
     else:
         return f"Contact {name} not found."
-    
-@input_erorr
+
+@input_error
 def show_phone(args, book: AddressBook):
     name = args[0]
-    record = book.get(name)
+    record = book.find(name)
     if record:
         return f"{name}: {', '.join(p.value for p in record.phones)}"
     else:
         return f"Contact {name} not found."
 
-@input_erorr
+@input_error
 def show_all(book: AddressBook):
     if not book.data:
         return "No contacts found."
-    
-    return "\n".join(f"{name}: {', '.join(p.value for p in record.phones)}" for name, record in book.data.items())
 
+    return "\n".join(
+        f"{name}: {', '.join(p.value for p in record.phones)}"
+        for name, record in book.data.items()
+    )
 
-@input_erorr
+@input_error
 def add_birthday(args, book: AddressBook):
     name, birthday = args
-    record = book.get(name)
-    
+    record = book.find(name)
+
     if record:
         record.birthday = Birthday(birthday)
         return f"Birthday for {name} added: {birthday}"
     else:
         return "Contact not found."
-    
 
-@input_erorr
+@input_error
 def show_birthday(args, book: AddressBook):
     name = args[0]
-    record = book.get(name)
+    record = book.find(name)
 
     if record and record.birthday:
         return f"Birthday {name}: {record.birthday.value.strftime('%d.%m.%Y')}"
     else:
         return "Contact not found or birthday not set."
 
-@input_erorr
+@input_error
 def birthdays(args, book):
     upcoming = book.get_upcoming_birthdays()
 
     if not upcoming:
-        return "No greetings for next week"
-    result = "Gretting for next week:\n"
+        return "No greetings for next week."
+    
+    result = "Greetings for next week:\n"
     for item in upcoming:
-        result += f"{item['name']}: {item['birthday']}\n"
+        result += f"{item['name'].value}: {item['birthday']}\n"
 
     return result.strip()
 
