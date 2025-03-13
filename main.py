@@ -58,10 +58,13 @@ def show_all(book: AddressBook):
     if not book.data:
         return "No contacts found."
 
-    return "\n".join(
-        f"{name}: {', '.join(p.value for p in record.phones)}"
-        for name, record in book.data.items()
-    )
+    result = []
+    for name, record in book.data.items():
+        phones = ', '.join(p.value for p in record.phones)
+        birthday = record.birthday.value if record.birthday else "No birthday"
+        result.append(f"{name}: Phones: {phones}, Birthday: {birthday}")
+
+    return "\n".join(result)
 
 @input_error
 def add_birthday(args, book: AddressBook):
@@ -85,7 +88,7 @@ def show_birthday(args, book: AddressBook):
         return "Contact not found or birthday not set."
 
 @input_error
-def birthdays(args, book):
+def birthdays(args, book: AddressBook):
     upcoming = book.get_upcoming_birthdays()
 
     if not upcoming:
@@ -93,7 +96,7 @@ def birthdays(args, book):
     
     result = "Greetings for next week:\n"
     for item in upcoming:
-        result += f"{item['name'].value}: {item['birthday']}\n"
+        result += f"{item['name']}: {item['birthday']}\n"
 
     return result.strip()
 
