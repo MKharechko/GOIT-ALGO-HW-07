@@ -74,25 +74,27 @@ class AddressBook(UserDict):
         today = datetime.today().date()
 
         for record in self.data.values():
-                try:
-                    birthday_date = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
-                except ValueError:
-                    continue
 
-                birthday_this_year = birthday_date.replace(year=today.year)
-                if birthday_this_year < today:
-                    birthday_this_year = birthday_this_year.replace(year=today.year + 1)
+            if record.birthday is None:
+                continue
 
-                days_until_birthday = (birthday_this_year - today).days
-                if 0 <= days_until_birthday <= 7:
-                    greeting_day = birthday_this_year
-                    if greeting_day.weekday() in (5, 6):  
-                        greeting_day += timedelta(days=(7 - greeting_day.weekday()))
+            birthday_date = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
+            birthday_this_year = birthday_date.replace(year=today.year)
 
-                    upcoming_birthdays.append({
-                        "name": record.name.value,  
-                        "birthday": greeting_day.strftime("%d.%m.%Y")
-                    })
+            if birthday_this_year < today:
+                birthday_this_year = birthday_this_year.replace(year=today.year + 1)
+
+            days_until_birthday = (birthday_this_year - today).days
+
+            if 0 <= days_until_birthday <= 7:
+                greeting_day = birthday_this_year
+                if greeting_day.weekday() in (5, 6):
+                    greeting_day += timedelta(days=(7 - greeting_day.weekday()))
+                
+                upcoming_birthdays.append({
+                    "name": record.name.value,
+                    "birthday": greeting_day.strftime("%d.%m.%Y")
+                })
 
         return upcoming_birthdays
     def __str__(self):

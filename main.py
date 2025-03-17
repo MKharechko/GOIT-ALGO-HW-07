@@ -10,6 +10,8 @@ def input_error(func):
             return f"Key {e} not found, try again."
         except IndexError:
             return "Index not found, write again."
+        except AttributeError as e:
+            return f"Attribute error: {e}"
     return inner
 
 @input_error
