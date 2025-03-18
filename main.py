@@ -16,9 +16,11 @@ def input_error(func):
 
 @input_error
 def parse_input(user_input):
+    if not user_input.strip():
+        return "", []
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
-    return cmd, args  
+    return cmd, args
 
 @input_error
 def add_contact(args, book: AddressBook):
